@@ -1,0 +1,67 @@
+﻿Scanner fin = new Scanner(System.in);
+int N = fin.nextInt();		只读取整形的数据，输入读取完之后，将光标放在同一行。
+scanner.nextLine()							//读取字符串
+scanner.next()
+
+String.replace("oldchar","newchar")   		return null    //可用于字符的删除
+String.charAt(index)     					return char
+(int)char / (char)int    ASCII码   48~57->0~9    65~90->A~Z    97~122->a~z
+String.substring(index1,index2)    			return string    包括index1不包括index2
+String.indexOf(str)
+
+注意定义静态方法(无需对象来调用)
+
+Arraylist.add(Object)
+Arraylist.remove(index)
+Arraylist.get(index)
+
+Collection keySet = map.keySet();
+List<> list = new ArrayList<>(keySet);
+
+Collections.sort(list)
+Collections.sort(list, new Comparator)   自定义cmp
+
+Collections.reverse(list)
+Collections.min(list)
+Collections.max(list)
+
+Arrays.sort(int[])
+Arrays.asList(int,int,int,...)
+int[] newArray = Arrays.copyOfRange(oldArray, startIndex, endIndex)
+
+要注意数组是否越界！！
+for(int i=1; i<list.size; i++)				//错误！list的size()是方法，而数组的length才是属性
+	String line = list.get(i);       		//错误！这里应该是i-1
+
+for(int i=0; i<leftCount; i++) {        	//错误！leftCount的值会在for循环里面改变！
+    if(a[i] == a[mid])
+        leftCount--;
+}
+
+for(int i=0; i<recoverKey.size(); i++) {
+    for(int j=1; j<=N; j++) {
+        if(keybox[j] == -1) {
+            keybox[j] = recoverKey.get(0);
+            recoverKey.remove(0);  			//错误！这里的remove操作改变了list.size();导致for循环次数不正确！
+            break;
+        }
+    }
+}
+
+Integer.parseInt
+String.valueOf
+
+
+int days[]={0,31,28,31,30,31,30,31,31,30,31,30,31};
+ 
+
+//月份表和星期表
+string m[13]={"","jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"};
+
+string w[7]={"sun","mon","tue","wed","thu","fri","sat"};
+
+StringBuilder类    sb.append(str)   sb.toString()   sb.reverse()
+
+Map类  Map<x,x> map = new HashMap();  map.containsKey(key)  map.put(key,value)  map.get(key)
+
+Set类  Set<> set = new HashSet();  set.contains(xxx)   set.add(xxx)

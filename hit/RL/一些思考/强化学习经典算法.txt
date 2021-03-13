@@ -1,0 +1,126 @@
+思考算法的角度：
+on-policy，off-policy
+数据利用率(重复使用的前提是环境model不能发生改变，multiagent一般不满足)
+探索方式：ε-greedy(DQN)，noisy(DDPG)，概率分布(A3C)，并行采样(A3C)，策略熵(A3C)
+单步更新还是单幕更新
+是否存在方差与偏差问题
+支持连续动作还是离散动作
+是否支持并行更新梯度或并行采样
+是否对超参数敏感
+
+一、DQN系列
+
+DQN：
+动作策略ε-greedy，ε随着训练过程线性下降，复杂任务就下降小一些，简单任务下降大一些
+目标策略贪婪
+replay buffer：解决独立同分布，默认1e-6，需要兼顾稳定性和优胜劣汰
+一个Q网络  一个target net，输入s，输出每个q的动作值函数，target net一般500 step硬替换一次
+损失函数r + γ*max q_next - q_eval
+处理离散动作，不能处理连续动作
+可以处理单步动作，处理多步动作的话需要重要性采样
+
+DoubleDQN：
+动作策略ε-greedy
+目标策略贪婪
+replay buffer
+一个Q网络，一个target net，输入s，输出每个q的动作值函数
+损失函数r + γ*q_next(s', argmax a) - q_eval
+处理离散动作，不能处理连续动作
+可以处理单步动作，处理多步动作的话需要重要性采样
+
+PrioritizedDQN：
+重新定义了replay buffer
+loss大的放在前面
+
+DuelingDQN：
+Q值的计算方式改成了V+A-mean(A)
+加一个mean(A)是为了对A做中心化处理，使得网络可以区分V和A
+原来的DQN是通过网络直接输出Q值
+
+
+二、DDPG系列
+
+DDPG(动作空间维度不高可以使用)：
+动作策略：actor直接输出确定性动作(在选择确定性动作之后加入随机噪声来满足探索性，不同噪声在不同任务中表现不同)
+目标策略：贪婪
+属于offpolicy方法，其一是因为加入了动作噪声，其二是采用了replay buffer
+只能处理连续性动作空间，不能处理离散性动作空间，因为离散空间不可导
+一个critic网络，一个critic_target网络，一个actor网络，一个actor_target网络
+critic网络的学习率要比actor高一个数量级，因为actor的学习完全来自critic
+target net的更新频率和主网络相同，采用参数软替换
+Q值网络输入s a 输出动作值函数      actor网络输入s输出确定的a
+replay buffer
+损失函数   q(s, pi(s))        r+γ*q_target(s', pi'(s'))-q_eval
+
+TD3：
+DDPG的改进版本
+采用双Q学习，又加入了一组critic，降低max策略过高估计的问题
+延迟actor的更新次数，使得critic：actor=2：1，让actor训练更加稳定
+在actor_target中加入噪声，使算法训练更稳定
+
+
+三、PPO系列
+
+PG：
+动作策略：根据网络输出的动作概率值选择动作
+目标策略：网络输出的动作概率值
+直接拿到轨迹直接用，属于onpolicy方法
+存在MC的问题，方差大
+可以处理离散动作，也可以处理存在动作分布的连续动作
+一个pi网络，输入s，输出每个动作的选择概率p再softmax，或者输出动作分布参数
+损失函数  Gt * ▽pi(a) / pi(a)
+
+AC：
+动作策略：根据actor输出的动作概率值选择动作
+目标策略：和实际采样轨迹完全一样
+直接拿到轨迹直接用，属于onpolicy方法
+一个Q网络，一个pi网络，Q网络输入是s a输出值函数，pi网络输入s输出每个a的概率
+用Q值代替PG中的Gt，有效解决MC存在的问题
+可以处理离散动作，也可以处理动作分布的连续动作
+损失函数  Q(s, a) * ▽pi(a) / pi(a)     r+γ*maxQ'-Q
+
+A2C：
+引入了baseline V ，  降低方差
+但是需要学习Q和V两个网络，将Q用r+γ*V'代替
+一个V网络，一个pi网络，V网络输入是s输出是状态值函数，pi网络输入s输出每个a的概率
+可以处理离散动作，也可以处理动作分布的连续动作
+无 target net 
+损失函数加入策略熵，提高pi的探索性
+损失函数  (r(s, a) + γ*V(s') - V(s))* ▽pi(a) / pi(a)       r(s, a) + γ*V(s') - V(s)     
+
+A3C：
+动作策略：根据actor输出的动作概率值选择动作
+目标策略：和实际采样轨迹完全一样
+直接拿到轨迹直接用，属于onpolicy方法
+可以处理离散动作，也可以处理连续动作
+异步处理多个A2C，一个global net负责全局参数，每个local net单独更新，计算出来的梯度再用来更新global net，然后再从global net拷贝更新后的参数
+采用n-step，为了平衡A2C中单步回报导致偏差过大的问题，平衡偏差和方差
+一个V网络，一个pi网络，V网络输入是s输出是状态值函数，pi网络输入s输出每个a的概率
+actor的损失函数加入策略熵，提高pi的探索性
+损失函数  (Σγ^...r + γ^n *V(sn) - V(s))* ▽pi(a) / pi(a)      Σγ^...r + γ^n *V(sn) - V(s)
+A3C可以使用offpolicy的形式，但是需要重要性采样，V的重要性采样还要比Q多一步
+onpolicy策略均不可以使用replay buffer，因为replay buffer的使用就意味着行动策略和目标策略的分布不同，属于offpolicy方法，需要重要性采样
+
+TRPO：
+策略更新保证回报函数单调不降
+本质是一个MM算法
+找到一个状态轨迹服从旧策略，动作轨迹服从新策略的近似函数
+通过数学推导得到新策略的回报函数和近似函数的大小服从关系，得到了MM算法的替代函数
+通过共轭梯度下降算法更新替代函数
+把替代函数多余的那一项放入了约束里，用一个置信域来约束
+属于onpolicy算法，采样轨迹和用于更新策略的轨迹都是pi_θ，使用了重要性采样是为了解决不知道pi_(θ+1)的情况
+技巧：采用近似函数处理新策略的状态分布，采用重要性采样处理新策略的动作分布，采用平均KL散度代替最大KL散度
+
+PPO：
+和TRPO一样的道理，属于onpolicy算法
+local net负责拷贝global net的参数进行采样，采样结束后把buffer上传到global net，global net单独进行参数更新
+一个new_pi的网络，一个old_pi的网络，一个V值网络     V值网络输入s输出状态值函数   new_pi网络输入s输出动作分布或离散动作    old_pi不更新，用于重要性采样
+损失函数    min( ratio*(Σγ^...r + γ^n *V(sn) - V(s)), clip(ratio, 1-ε, 1+ε)**(Σγ^...r + γ^n *V(sn) - V(s)) )         (Σγ^...r + γ^n *V(sn) - V(s))
+无target net ，感觉A3C PPO这种n-step方法对target net的需求不是很大，应该是因为损失函数的原因，并没有采取半梯度更新
+采用clip限制每次更新的幅度，防止onpolicy在错误的路上越走越远，clip越小越稳定，后期可以增大
+value_loss一般取0.5，policy_loss一般取1，entropy_loss需要调
+
+
+
+
+

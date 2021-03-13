@@ -1,0 +1,6 @@
+Android Studio常用键：
+ctrl+q：显示一个类的API文档
+ctrl+点击：进入一个类的代码
+ctrl+alt+t：给选定代码添加逻辑结构
+alt+回车：查看错误
+ctrl+/：添加注释

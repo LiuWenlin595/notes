@@ -1,0 +1,30 @@
+硬件：
+top：查看cpu使用情况
+nvidia-smi：查看显卡使用情况
+lscpu：查看cpu信息
+df -h：查看磁盘使用情况
+apt install htop  
+
+查找：
+ps：查看当前shell的进程
+ps -ef：查看所有进程
+ps -ef | grep name：查找固定name的进程
+histroy | grep name：查找包含name的历史命令
+
+删除：
+kill -9 pid：强制杀死pid
+pkill -9 -f name：批量杀死含有name的进程
+
+查看：
+tail -f file：查看正在改变的file日志
+tail -f file | grep keyword：查看文件中正在改变的包含keyword的日志
+tail -n xxx file：查看file文件最后的xxx行
+cat file：打印文件
+netstas：查看TCP之类的，自己用的比较少
+
+配置：
+配置系统日志：
+/etc/rsyslog.d/50-default.conf
+*.info;mail.none;authpriv.none;cron.none        /var/log/messages
+systemctl restart rsyslog.service
+grep "Out of memory" /var/log/messages

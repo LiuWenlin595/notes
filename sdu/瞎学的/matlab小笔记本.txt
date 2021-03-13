@@ -1,0 +1,181 @@
+  第二节课		数据操作及语法
+
+who				查看当前变量名称
+whos				查看当前变量的具体信息
+save				保存变量
+class(a)			a的类型 
+unit8(a)			a的uint8形式
+double(a)			a的double形式
+double('a')或abs('a') 		字符a的ASCII码
+char(99)             		将ASCII码转换为字符输出
+str2num(str)			字符串转换为数值
+num2str(number)			数值转换为字符串
+eval(str)			把字符串当作matlab语句来执行
+结构体.成员名=表达式		创建结构体类型
+isstruct(a)			判断a是否是结构体
+fieldnames(a)			获取结构体a的成员名称，返回类型是一个字符串的数组
+isfield(a,'x1')			判断x1是否是结构体a的成员
+rmfield				删除某一个结构体的成员
+getfield			获得某一个结构体的成员
+a={1,'x',[1 2]}			创建一个单元类型a
+format style			设置输出显示格式为style
+
+
+
+
+
+第三节课		矩阵操作
+
+edit  				启动编译器
+zeros(m,n)			m行n列零矩阵
+ones(m,n)			m行n列一矩阵
+e1:e2:e3			冒号表达式，e2为步长，e1始e2末
+linspace(a,b,n)			建立行向量(一个数组)，a始b末，n为向量长度
+A(m,n)				得到矩阵A中第m行n列的元素(利用下标索引)
+A(n)				得到矩阵A中序号为n的元素(利用序号索引)
+[m,n]=find(A == x)		得到矩阵A中元素x所在的行列
+ind=find(A == x)		得到矩阵A中元素x所在的序号
+sub2ind(size(A),m,n)		将矩阵A中m行n列转换为对应的序号
+[m,n]=ind2sub(size(A),n)	将矩阵A中n序号转换为对应的行列
+A(:)				将矩阵A作为列向量返回，等同于reshape(A,m,1)(m行1列)
+A'				对A矩阵进行转置
+A(m,:)orA(m,e1:e2)orA(m,[e1 e2])对矩阵进行拆分，获得m行所有列 或者 m行e1到e2列 或者 m行e1和e2列
+A(m,n)或A(n)=[]			删除矩阵某一元素(只能删除一整行或一整列)
+repmat(A,m,n)			将A矩阵扩展为m倍的行数以及n倍的列数
+unique(R)			保留R矩阵中的不同元素，相同的删除
+
+
+
+
+
+第四节课		矩阵处理基础
+
+eye(m,n)or eye(n)		创建单位矩阵
+rand(m,n)			返回m行n列在区间 (0,1) 内均匀分布的随机数
+randn(m,n)			返回m行n列从标准正态分布中得到的随机标量
+S = a + (b-a)*rand		产生从a到b之间均匀分布的随机数
+S = u + sqrt(v)*randn		产生均值为u方差为v的正态分布随机矩阵
+mean(A)				获得一个矩阵的均值 
+std(A)				获得一个矩阵的方差
+magic(n)			产生魔方矩阵
+hilb(n)				产生Hilbert矩阵(每个位置上的值都是1/i+j)
+format rat			用有理数形式进行输出(讲到这是因为要观察hilbert的输出)
+toeplize(r) or toeplize(c,r)	产生Toeplize矩阵,c作为第一列,r作为第一行
+A+B				矩阵相加
+k*A				矩阵乘以系数
+A*B 				矩阵相乘
+det(A)				求A的行列式，行列式不为0则矩阵可逆
+inv(A)				求矩阵A的逆矩阵
+dot(a,b)			计算a与b的内积
+conj(A)				得到A的共轭矩阵
+jordan(A)			求矩阵的jordan标准型
+eig(A)				求矩阵的特征值和特征向量
+norm				返回矢量范数和矩阵范数，反正就是范数
+diff(A,n)			获得A的n阶导数(矩阵求导就是对矩阵的每一个元素进行求导)
+funm(A, @fun)			求解一个矩阵为变量的函数
+expm(A)				求解矩阵的矩阵指数
+
+
+
+
+
+第五节课		程序控制结构
+
+if...else  switch  try  for  while
+input()				数据输入
+disp()				数据显示，比直接显示更简洁
+pause()				程序暂停
+fix				向零方向取整
+round				向就近方向取整
+floor				向负无穷取整
+ceil				向正无穷取整
+.03				等同于0.03
+isempty				判断元素是否为空
+
+
+
+
+
+第六节课		matlab编译器和程序调试
+
+Ctrl+r				进行备注
+Ctrl+t				取消备注
+nargin				函数输入参数数目
+nargout				函数输出参数数目
+varargin			可变长度输入参数列表
+varargout			可变长度输出参数列表
+使用global声明			提供不同的M文件访问同一个变量
+
+
+
+
+
+第七节课		二维高层绘图
+
+plot(x,y)			以向量x为横坐标，向量y为纵坐标绘制图像
+plot(x1,y2,x2,y2)		绘制两条曲线
+plot(x,y,'k'/'*'/'--')		更改图像的曲线颜色，关键点形状，曲线线条形状
+xlabel('..')/ylabel('..')	添加坐标轴
+title('..')			添加标题
+text				给图像某个点增加标识
+legend				给图像在右上角增加标识
+xlim([min max])			控制x轴显示范围
+ylim([min max])			控制y轴显示范围
+axis([xmin xmax ymin ymax])	对坐标轴格式进行控制
+hold on				图形保持
+hold off 			取消图形保持
+subplot				进行窗口分割
+
+
+
+
+
+第八节课		二维底层绘图
+
+line()				绘制图形，下面的属性都跟line有关
+Color				颜色属性
+LineWidth			线宽属性
+LineStyle			线形属性
+Marker				标记属性
+MarkerSize			标记大小属性
+axes				底层坐标轴控制，没怎么听，详见08
+
+
+
+
+
+第九节课		notebook
+没啥用，用到再说	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

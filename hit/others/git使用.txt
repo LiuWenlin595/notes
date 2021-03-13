@@ -1,0 +1,44 @@
+1. 下载：
+https://npm.taobao.org/mirrors/git-for-windows/
+cmd，git --version
+
+2. 最小配置
+git config --global user.name "name"
+git config --global user.email "email"
+git config (--system/--global/--local) --list
+local只能在具体仓库定义且local的优先级要比global高
+
+3. 管理仓库、分支
+git init repository
+git branch -d(-D) branch_name
+
+4. 管理文件
+git add filename / git add -u(pdate) / git add -a(ll)
+git rm filename
+git mv old_file new_file
+git diff commit1 commit2
+git commit -m 'reason'
+
+5. 管理仓库
+git reset --hard
+
+
+6. 查看仓库
+git status
+git log (--oneline)  (--all / repository)  (-n4)
+
+7. 图形化界面
+gitk
+小乌龟  https://www.jianshu.com/p/33108325fc87
+
+8. 修改最近的一次commit
+git commit --amend
+
+
+
+现在我们应该明白git底层的运行流程了，当我们添加或者修改了文件并且add到Stage Area之后，
+首先会根据文件内容创建不同的blob，当进行提交之后马上创建一个tree组件把需要的blob组件添加进去，
+之后再封装到一个commit组件中完成本次提交。
+在将来进行reset的时候可以直接使用git reset --hard xxxxx可以恢复到某个特定的版本，
+在reset之后，git会根据这个commit组件的id快速的找到tree组件，然后根据tree找到blob组件，
+之后对仓库进行还原，整个过程都是以hash和二进制进行操作，所以git执行效率非常之高。

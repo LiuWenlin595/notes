@@ -1,0 +1,376 @@
+用户和表空间
+
+在sys，system，sysman，scott四个用户权限中，scott用户权限最低。
+//登陆用户
+connect username/password
+
+
+
+//查看用户	
+show user
+
+
+
+//查看用户数据字典										
+desc dba_users
+
+
+
+//在...中选择
+select (username) from (dba_users)
+
+
+
+永久表空间				//数据库中要永久存储的一些对象
+临时表空间				//存放一些数据库操作中中间执行的过程
+UNDO表空间				//被修改之前的数据
+
+
+
+//查看表空间数据字典
+desc dba_tablespaces\user_tablespaces	
+
+
+
+//查看默认表空间和临时表空间
+select default_tablespace,temporary_tablespace from dba_users 	
+
+
+
+//更改默认|临时表空间的名字
+alter USER username DEFAULT|TEMPORARY TABLESPACE tablespace_name
+
+
+
+//创建表空间
+CREATE[TEMPORARY] TABLESPACE tablespace_name TEMPFILE|DATAFILE 'xx.dbf' SIZE xx
+
+
+
+//设置表空间联机和脱机状态
+ALTER TABLESPACE tablespace_name ONLINE|OFFLINE
+
+
+
+//设置表空间只读或可读写状态
+ALTER TABLESPACE tablespace_name READ ONLY|READ WRITE
+
+
+
+//给表空间增加数据文件
+ALTER TABLESPACE tablespace_name ADD DATAFILE 'xx.dbf' SIZE xx   
+
+
+
+//删除表空间数据文件     //注意，不能删除表空间第一个数据文件，除非把整个表删除
+ALTER TABLESPACE tablespace_name DROP DATAFILE 'xx.dbf' 
+
+
+
+//删除表空间[同时删除表空间中的数据文件]
+DROP TABLESPACE tablespace_name[INCLUDING CONTENTS]
+
+
+
+//数据类型
+//字符型
+CHAR(n)   VARCHAR2(n)    		//n位字符，可变长的n位字符
+NCHAR(n)   NVARCHAR2(n)			//n位unicode字符，可变长的n位unicode字符
+//数值型
+NUMBER(p,s)				//p表示有效数字的位数，s表示小数点后的位数
+FLOAT(n)				//通常用于存储二进制数
+//日期型
+DATA					//可以精确到秒
+TIMESTAMP				//可以精确到小数秒
+//其他类型
+BLOB					//以二进制方式存放数据
+CLOB					//以字符串方式存放数据
+
+
+
+//创建表
+CREATE TABLE table_name(
+column_name datatype,
+...//同上
+...);
+
+
+
+//添加表字段
+ALTER TABLE table_name ADD column_name datatype
+
+
+
+//更改字段数据类型
+ALTER TABLE table_name MODIFY column_name datetype
+
+
+
+//删除字段
+ALTER TABLE table_name DROP COLUMN column_name
+
+
+
+//修改字段名
+ALTER TABLE table_name RENAME COLUMN column_name TO new_column_name
+
+
+
+//修改表名
+RENAME table_name TO new_table_name
+
+
+
+//删除表中全部数据(截断表)，比delete快很多
+TRUNCATE TABLE table_name
+//删除整个表
+DROP TABLE table_name
+
+
+
+//向表中插入数据
+INSERT INTO table_name
+(column1,column2,...)
+VALUES(value1,value2,...) 
+
+INSERT INTO table_name(id)
+VALUES(1);
+
+
+
+//表中数据设置默认值
+CREATE TABLE table_name
+(id number(6,0),
+regdate date default sysdate)
+
+ALTER TABLE table_name
+MODIFY email DEFAULT default_content
+
+
+
+//复制表数据
+//在建表时复制
+CREATE TABLE table_new
+AS
+SELECT column1,...|*  FROM table_old
+//在添加时复制
+INSERT INTO table_new
+[(column1,...)]
+SELECT column1,...|*  FROM table_old
+
+
+
+//修改数据
+UPDATE table_name
+SET column1=value1,...
+[WHERE conditions]
+//删除数据
+DELETE FROM table_name
+[WHERE condition]
+
+
+
+//在创建表时设置非空约束
+CREATE TABLE table_name(
+column_name datetype NOT NULL,...
+);
+//在修改表时添加非空约束
+ALTER TABLE userinfo
+modify column_name datatype NOT NULL;
+//在修改表时去除非空约束
+ALTER TABLE table_name
+MODIFY column_name datatype NULL;
+
+
+
+//在创建表时设置主键约束
+CREATE TABLE table_name(
+column_name datetype PRIMARY KEY,...
+)
+//在创建完成表后添加主键约束
+CONSTRAINT constraint_name(约束的名字)
+PRIMARY KEY(column_name1,...)
+//在修改表时添加主键约束
+ALTER TABLE table_name
+ADD CONSTRAINT constraint_name PRIMARY KEY(column_name1,...)
+
+
+
+//查看用户表的约束
+desc user_constraints
+select constraint_name from user_constraints where table_name='XXX'(此处需要大写);
+//更改约束的名字
+ALTER TABLE userinfo
+RENAME CONSTRAINT old_name TO new_name
+
+
+
+//在创建表时设置外键约束(table1是从表，talbe2是主表)
+CREATE TABLE table1
+(column_name datetype REFERENCES 
+table2(column_name),...);
+//在创建完成表后添加外键约束
+CONSTRAINT constraint_name FOREIGN
+KEY(column_name) REFERENCES
+table_name(column_name) [ON DELETE CASCADE] (采用级联删除)
+//在修改表时添加外键约束
+ALTER TABLE table_name
+ADD CONSTRAINT constraint_name FOREIGN 
+KEY(column_name) REFERENCES 
+table_name(column_name) [ON DELETE CASCADE]
+
+
+
+//唯一约束和主键约束的区别
+主键约束不能为空值，唯一约束允许有一个空值
+主键约束在一个表中只能有一个，唯一约束可以有多个
+在主键已经创建了之后还想保证其他数据的唯一性就需要用到唯一约束
+
+
+
+//在创建表时创建唯一约束
+CREATE TABLE table_name
+(column_name datatype UNIQUE,...)
+//在创建完成表后添加唯一约束(一次只能设立一个唯一约束，如果有需要得多写几句)
+CONSTRAINT constraint_name UNIQUE(column_name)
+//在修改表时添加唯一约束
+ALTER TABLE table_name
+ADD CONSTRAINT constraint_name
+UNIQUE(column_name)
+
+
+
+//检查约束(让输入的值满足一定的条件，具有实际意义)
+//在创建表时设置检查约束
+CREATE TABLE table_name
+(column_name datatype CHECK(expressions),
+...)
+//在创建完成表后添加检查约束
+CONSTRAINT constraint_name CHECK(expressions)
+//在修改表时添加检查约束
+ALTER TABLE table_name
+ADD CONSTRAINT constraint_name 
+CHECK(expressions)
+
+
+
+//禁用约束，启用约束
+DISABLE|ENABLE CONSTRAINT constraint_name
+//删除约束
+DROP CONSTRAINT constraint_name
+//删除主键约束
+DROP PRIMARY KEY
+
+
+
+//基本查询语句
+SELECT [DISTINCT](不显示重复的记录) column_name1,...|* FROM table_name [WHERE conditions]
+
+
+
+//更改字段名
+COLUMN/COL column_name HEADING new_name
+//设置结果显示格式
+COLUMN column_name FORMAT dataformat
+//清除之前设计过的格式
+COLUMN column_name CLEAR
+//查询表中所有字段
+SELECT * FROM table_name
+//查询指定字段
+SELECT column_name1,... FROM table_name
+//给字段设置别名(别名仅出现在结果中)
+SELECT column_name1 (AS) new_name1,column_name2 (AS) new_name2,...
+FROM table_name
+
+
+
+//运算符
+算术运算符(+,-,*,/)
+比较运算符(>,>=,<,<=,<>)
+逻辑运算符(and,or,not)  //not(expressions)   not用法
+
+select username from users where username='aaa' or (salary>800 and salary<=2000)
+
+
+
+//模糊查询
+通配符的使用(_,%)
+一个_只能代表一个字符
+%可以代表0到多个任意字符
+
+select username from users where username like '_a'
+
+
+
+//范围查询
+BETWEEN...AND
+
+select * from users where salary between 800 and 2000
+
+IN/NOT IN
+
+select * from users where username in('aaa','bbb')
+
+
+
+//对查询结果排序
+SELECT ... FROM ... [WHERE...] 
+ORDER BY column1 DESC/ASC,...(降序，升序排列)
+
+select * from users order by id desc,salary asc;
+
+
+
+//case...when语句的使用
+CASE column_name 
+WHEN value1 THEN result1,...
+[ELSE result] END
+
+select username,case username when 'aaa' then '计算机部门'
+when 'bbb' then '市场部门' else '其他部门' end as 部门
+
+CASE
+WHEN column_name = value1
+THEN result,...  [ELSE result] END
+
+select username,case when username='aaa' then '计算机部门'
+when username='bbb' then '市场部门' else '其他部门' end as 部门
+
+select username,case when salary<800 then '工资低' 
+when salary>5000 then '工资高' end as 工资水平
+
+
+
+//decode函数的用法
+//对字段当中的值进行一个条件的判断
+decode(column_name,values,result1,...,defaultvalue)
+
+select username,decode(username,'aaa','计算机部门','bbb','市场部门','其他') as 部门
+from users(table_name);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
