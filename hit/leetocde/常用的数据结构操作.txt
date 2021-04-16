@@ -104,6 +104,7 @@ max和min：max(list, key=lambda x:abs(x))；max(list, key=len)；max(list, key=lamb
 删除字符串首尾空格：str.strip()
 判断list是否全为True或False：all(list)
 根据指定字符划分字符串为列表：list = str.split(char)
+矩阵根据索引找位置：matrix[index / row][index % col]
 
 
 debug：
