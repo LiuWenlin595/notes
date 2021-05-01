@@ -89,7 +89,10 @@ Q24：可不可以用10个DQN训练10个agent完成MARL任务？
 A24：1.很浪费资源，没必要，应该根据任务的类型细分。   
          2.可以训练，但是训练不出很好的效果。每个agent的输入只能观察到其他agent的状态，但是不知道其他agent的动作，(好像就算是MARL也会存在这个问题) 
 
-
+Q25：A3C，IMPALA，SEED RL的区别
+A25：A3C的actor负责和环境交互，前向传播生成动作，反向传播计算梯度，梯度回传到learner，从learner获得新的模型参数
+	IMPALA的actor负责和环境交互，前向传播生成动作，整理trajectory传给learner(反向传播由learner负责)，从learner获得新的模型参数
+	SEED RL的actor负责和环境交互，把observation传给learner，由learner负责生成动作和更新梯度(前向传播和反向传播都由learner负责)，actor没有单独的model
 
 
 
