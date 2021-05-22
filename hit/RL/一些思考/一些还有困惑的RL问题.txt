@@ -94,7 +94,9 @@ A25：A3C的actor负责和环境交互，前向传播生成动作，反向传播
 	IMPALA的actor负责和环境交互，前向传播生成动作，整理trajectory传给learner(反向传播由learner负责)，从learner获得新的模型参数
 	SEED RL的actor负责和环境交互，把observation传给learner，由learner负责生成动作和更新梯度(前向传播和反向传播都由learner负责)，actor没有单独的model
 
-
+Q26：基于熵的RL的优点？
+A26：1.exploration：探索更多的策略，当环境突然发生微变导致某一轨迹失效时，可以通过其他策略达到目标
+	2.pretrain：基于熵训练的agent，在其它任务下进行微调，可以表现出更强的适应性。
 
 
 经典问题：
